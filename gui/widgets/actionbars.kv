@@ -1,0 +1,27 @@
+<TopActionBar>:
+    id: _action
+    size_hint: 1,0.03
+    pos_hint: {'top':1}
+    ActionView:
+        use_separator: True
+        ActionPrevious:
+            title: 'ComicStreamer Reader'
+            with_previous: False
+        ActionButton:
+            text: 'Settings'
+            on_release: app.open_settings()
+        ActionButton:
+            text: 'Btn2'
+        ActionGroup:
+            text: 'Group1'
+            ActionButton:
+                text: 'Btn5'
+            ActionButton:
+                text: 'Btn6'
+            ActionButton:
+                text: 'Btn7'
+
+        ActionOverflow:
+            ActionButton:
+                text: 'Btn3'
+
