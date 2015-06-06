@@ -61,7 +61,7 @@ class HomeScreen(AppScreenTemplate):
         data = results
         new_collection = ComicCollection()
         for item in data['comics']:
-            new_comic = ComicBook(**item)
+            new_comic = ComicBook(item)
             new_collection.add_comic(new_comic)
         self.collection = new_collection.comics
         scroll = self.ids.recent_comics_scroll
@@ -71,8 +71,8 @@ class HomeScreen(AppScreenTemplate):
         for comic in self.collection:
             comic_name = '%s #%s'%(str(comic.series),str(comic.issue))
             src_thumb = comic.thumb_url
-            inner_grid = RecentComicsInnerGrid(id='inner_grid'+str(comic.id))
-            comic_thumb = RecentComicsPageImage(source=src_thumb,id=str(comic.id))
+            inner_grid = RecentComicsInnerGrid(id='inner_grid'+str(comic.comic_id_number))
+            comic_thumb = RecentComicsPageImage(source=src_thumb,id=str(comic.comic_id_number))
             comic_thumb.comic = comic
             comic_thumb.comics_collection = self.collection
             inner_grid.add_widget(comic_thumb)

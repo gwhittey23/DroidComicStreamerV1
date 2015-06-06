@@ -39,11 +39,88 @@ class ComicCarousel(Carousel):
 
 class ComicPageImage(AsyncImage):
     parent_id = StringProperty()
+
     def __init__(self, **kwargs):
        # self.page_tb_inrgrid =PageThumbInnerGrid(id=str(self._index))
         super(ComicPageImage, self).__init__(**kwargs)
         self._index = kwargs.pop('_index',0)
         self._thumb = Image()
+
+    def _new_image_downloaded(self, scatter , outer_grid,inner_gride,comic_number, proxyImage,):
+        '''Fired once the image is downloaded and ready to use'''
+        def _remove_widget():
+            carousel.remove_widget(scatter)
+
+        def _add_parts():
+            part_1 = ComicPageImage(_index=self._index,id='pi_'+str(self._index)+'b')
+            part_2 = ComicPageImage(_index=self._index+1,id='pi_'+str(self._index)+'b')
+            scatter_1 = ComicPageScatter(id='comic_scatter'+str(self._index))
+            scatter_2 = ComicPageScatter(id='comic_scatter'+str(self._index)+'b')
+            part_1.texture = proxyImage.image.texture.get_region(0,0,c_width/2,c_height)
+            part_2.texture = proxyImage.image.texture.get_region((c_width/2+1),0,c_width/2,c_height)
+            scatter_1.add_widget(part_1)
+            scatter_2.add_widget(part_2)
+            carousel.add_widget(scatter_1,i)
+            carousel.add_widget(scatter_2,i+1)
+        def _add_thumbs():
+            carousel.remove_widget(scatter)
+            part_1 = ComicPageImage(_index=self._index,id='pi_'+str(self._index)+'b')
+            part_2 = ComicPageImage(_index=self._index+1,id='pi_'+str(self._index)+'b')
+            scatter_1 = ComicPageScatter(id='comic_scatter'+str(self._index))
+            scatter_2 = ComicPageScatter(id='comic_scatter'+str(self._index)+'b')
+            part_1.texture = proxyImage.image.texture.get_region(0,0,c_width/2,c_height)
+            part_2.texture = proxyImage.image.texture.get_region((c_width/2+1),0,c_width/2,c_height)
+            scatter_1.add_widget(part_1)
+            scatter_2.add_widget(part_2)
+            carousel.add_widget(scatter_1,i)
+            carousel.add_widget(scatter_2,i+1)
+            #redo page thumb to have both parts
+            inner_grid_1 = ThumbPopInnerGrid(id='inner_grid'+str(self._index))
+            part1_thumb = ThumbPopPageImage(id=scatter_1.id,_index=self._index)
+            inner_grid_1.add_widget(part1_thumb)
+            part1_thumb.bind(on_press=part1_thumb.click)
+            smbutton_1 = ThumbPopPagebntlbl(text='P%sa'%str(self._index+1))
+            inner_grid_1.add_widget(smbutton_1)
+            outer_grid.add_widget(inner_grid_1)
+
+            inner_grid_2 = ThumbPopInnerGrid(id='inner_grid'+str(self._index+1))
+            part2_thumb = ThumbPopPageImage(id=scatter_2.id,_index=self._index+1)
+            inner_grid_2.add_widget(part2_thumb)
+            part2_thumb.bind(on_press=part2_thumb.click)
+            smbutton_2 = ThumbPopPagebntlbl(text='P%sb'%str(self._index+1))
+            inner_grid_2.add_widget(smbutton_2)
+            outer_grid.add_widget(inner_grid_2)
+
+
+        if proxyImage.image.texture:
+            split_dbl_page = App.get_running_app().config.get('Display', 'dblpagesplit')
+            if proxyImage.image.texture.width > 2*Window.width and split_dbl_page == '1':
+
+                base_url = App.get_running_app().config.get('Server', 'url')
+                src_thumb = "%s/comic/%d/page/%d?max_height=200#.jpg" % (base_url, comic_number, self._index)
+                app = App.get_running_app()
+                inner_grid_id ='inner_grid' + str(self._index)
+                page_image_id = str(self._index)
+                carousel = App.get_running_app().root.ids['comic_screen_id'].ids['comic_carousel']
+                inner_grid_id = 'inner_grid%s'%str(self._index)
+                c_width = self.texture.width
+                c_height = self.texture.height
+                Logger.debug('<<<New Split it running>>>>')
+                i = 0
+                for slide in carousel.slides:
+                    if slide.id == scatter.id:
+                        _remove_widget()
+                        _add_parts()
+                    i+=1
+                # for thumb in outer_grid.walk():
+                #     if thumb.id == 'inner_grid_id':
+                #         outer_grid.remove_widet(thumb)
+                #         _add_thumbs()
+            else:
+                if proxyImage.image.texture.width > 2*Window.width:
+                    scatter.size_hint=(2,1)
+
+                    #self.size_hint=(2,1)
 
     def _image_downloaded(self, widget ,comicstream_number, proxyImage,):
         '''Fired once the image is downloaded and ready to use'''
@@ -54,7 +131,7 @@ class ComicPageImage(AsyncImage):
             inner_grid_id ='inner_grid' + str(self._index)
             page_image_id = str(self._index)
             split_dbl_page = App.get_running_app().config.get('Display', 'dblpagesplit')
-
+            src_thumb = "%s/comic/%d/page/%d?max_height=200#.jpg" % (base_url, comicstream_number, self._index)
             top_pop = app.root.ids['comic_screen_id'].top_pop
             if proxyImage.image.texture.width > 2*Window.width and split_dbl_page == '1':
                 Logger.debug('<><><><>Split it<><><><>')
@@ -72,8 +149,8 @@ class ComicPageImage(AsyncImage):
                 inner_grid = ThumbPopInnerGrid(id='inner_grid'+str(self._index))
                 page_thumb = ThumbPopPageImage(id=self.parent_id,_index=self._index)
                 page_thumb.texture = part_1.texture
-                inner_grid.add_widget(page_thumb)
 
+                inner_grid.add_widget(page_thumb)
                 page_thumb.bind(on_press=page_thumb.click)
                 smbutton = ThumbPopPagebntlbl(size_hint=(None,None),size=(10,10),text='P%sa'%str(self._index+1),text_color=(0,0,0),
                 background_color=(1,1,1,.5))
@@ -96,7 +173,7 @@ class ComicPageImage(AsyncImage):
                    self.size_hint=(2,1)
                 self.texture = proxyImage.image.texture
                 inner_grid = ThumbPopInnerGrid(id='inner_grid'+str(self._index))
-                page_thumb = ThumbPopPageImage(id=self.parent_id,_index=self._index)
+                page_thumb = ThumbPopPageImage(source=src_thumb,id=self.parent_id,_index=self._index)
                 page_thumb.texture = self.texture
                 inner_grid.add_widget(page_thumb)
 
@@ -245,6 +322,7 @@ class ComicThumbScroll(ScrollView):
     pass
 
 class ComicScreen(AppScreenTemplate):
+    minmove = StringProperty()
     move_state = StringProperty()
     ab_state = StringProperty()
     comic_id = NumericProperty()
@@ -252,11 +330,15 @@ class ComicScreen(AppScreenTemplate):
     comics_collection = ObjectProperty()
     next_comic = ObjectProperty()
     prev_comic = ObjectProperty()
+
     def __init__(self,**kwargs):
         super(ComicScreen, self).__init__(**kwargs)
     #     self.move_state = 'open'
     #     self.ab_state = 'closed'
     # #
+    def on_leave(self):
+        pass
+
     def on_leave(self):
         app = App.get_running_app()
         app.manager.last_screen = self
@@ -269,8 +351,8 @@ class ComicScreen(AppScreenTemplate):
         for comic in self.comics_collection:
             comic_name = '%s #%s'%(str(comic.series),str(comic.issue))
             src_thumb = comic.thumb_url
-            inner_grid = NextComicsInnerGrid(id='inner_grid'+str(comic.id))
-            comic_thumb = NextComicImage(source=src_thumb,id=str(comic.id))
+            inner_grid = NextComicsInnerGrid(id='inner_grid'+str(comic.comic_id_number))
+            comic_thumb = NextComicImage(source=src_thumb,id=str(comic.comic_id_number))
             comic_thumb.comic = comic
             comic_thumb.comics_collection = self.comics_collection
             inner_grid.add_widget(comic_thumb)
@@ -281,103 +363,96 @@ class ComicScreen(AppScreenTemplate):
             inner_grid.add_widget(smbutton)
             grid.add_widget(inner_grid)
         scroll.add_widget(grid)
-    def load_comic(self,comic,comics_collection=None):
 
+
+
+    def load_comic(self,comic,comics_collection=None):
+        self.minmove = 'off'
+        Loader.pool.tasks.queue.clear()
         carousel = App.get_running_app().root.ids['comic_screen_id'].ids['comic_carousel']
         carousel.clear_widgets()
         self.comic = comic
         self.comics_collection = comics_collection
-        comic_number = comic.id
+        comic_number = comic.comic_id_number
         page_count = comic.page_count
         m_win_x = Window.width
         m_win_y = Window.height
         proxyImage = ''
         base_url = App.get_running_app().config.get('Server', 'url')
+        max_height = App.get_running_app().config.get('Server', 'max_height')
         scroll = ScrollView( size_hint=(1,1), do_scroll_x=True, do_scroll_y=False,id='page_thumb_scroll')
         self.thumb_pop = Popup(id='page_pop',title='Pages', content=scroll, pos_hint ={'y': .0001},size_hint = (1,.33))
-        grid = GridLayout(rows=1, size_hint=(None,None),spacing=5,padding_horizontal=5,id='outtergrd')
-        grid.bind(minimum_width=grid.setter('width'))
+        outer_grid = GridLayout(rows=1, size_hint=(None,None),spacing=5,padding_horizontal=5,id='outtergrd')
+        outer_grid.bind(minimum_width=outer_grid.setter('width'))
         #
         for i in range(0, page_count):
-            src_full = "%s/comic/%d/page/%d?max_height=1200#.jpg" % (base_url, comic_number, i)
+            src_full = "%s/comic/%d/page/%d?max_height=%d#.jpg" % (base_url, comic_number, i,int(max_height))
+            src_thumb = "%s/comic/%d/page/%d?max_height=200#.jpg" % (base_url, comic_number, i)
             scatter = ComicPageScatter(id='comic_scatter'+str(i))
             comic_page_image = ComicPageImage(source=src_full, _index=i,id='pi_'+str(i),parent_id=scatter.id)
-            proxyImage = Loader.image(src_full)
+
             scatter.add_widget(comic_page_image)
             carousel.add_widget(scatter)
             c_index =  len(carousel.slides)
             comic_page_image.car_index = c_index
-            proxyImage.bind(on_load=partial(comic_page_image._image_downloaded, grid,comic_number))
-        scroll.add_widget(grid)
+            inner_grid = ThumbPopInnerGrid(id='inner_grid'+str(i))
+
+            page_thumb = ThumbPopPageImage(source=src_thumb,id=scatter.id,_index=i)
+            inner_grid.add_widget(page_thumb)
+            page_thumb.bind(on_press=page_thumb.click)
+            smbutton = ThumbPopPagebntlbl(text='P%s'%str(i+1))
+            inner_grid.add_widget(smbutton)
+            outer_grid.add_widget(inner_grid)
+            proxyImage = Loader.image(src_full)
+            proxyImage.bind(on_load=partial(comic_page_image._new_image_downloaded, scatter,outer_grid,inner_grid,comic_number))
+        scroll.add_widget(outer_grid)
         self.build_top_list()
         self.next_comic = self.get_next_comic()
         self.prev_comic = self.get_prev_comic()
+
     def _open_mag_glass(self):
         my_carousel = App.get_running_app().root.ids['comic_screen_id'].ids['comic_carousel']
 
         scatter_w = my_carousel.current_slide
 
         scatter_w.open_mag_glass()
+
     def comicscreen_open_collection_popup(self):
         self.top_pop.open()
+
     def comicscreen_open_pagescroll_popup(self):
 
         self.thumb_pop.open()
 
-
     def _cal_id(self):
-        # carousel = App.get_running_app().root.ids['comic_screen_id'].ids['comic_carousel']
-        # carousel.clear_widgets()
-        # base_url = App.get_running_app().config.get('Server', 'url')
-        # i =1
-        # comic_number = 96
-        # src_full = "%s/comic/%d/page/%d?max_height=1200#.jpg" % (base_url, comic_number, i)
-        # comic_page_image = ComicPageImage(source=src_full, _index=i,id='pi_'+str(i),)
-        # carousel.add_widget(comic_page_image)
-        base_url = App.get_running_app().config.get('Server', 'url')
-        comic = self.next_comic
-        comic_name = '%s #%s'%(str(comic.series),str(comic.issue))
-        src_thumb = comic.thumb_url
-        inner_grid = NextComicsInnerGrid(id='inner_grid'+str(comic.id))
-        comic_thumb = NextComicImage(source=src_thumb,id=str(comic.id))
-        comic_thumb.comic = self.next_comic
-        comic_thumb.comics_collection = self.comics_collection
-        inner_grid.add_widget(comic_thumb)
-        comic_thumb.bind(on_press=comic_thumb.click)
-        smbutton = NextComicsPagebntlbl(text=comic_name)
-        inner_grid.add_widget(smbutton)
-        content = inner_grid
+        print self.comic.characters
 
-
-        self.dialog = Dialog(title="Load Next",
-							 content=content,
-							 size_hint=(.3, .3),
-							 height=dp(250),
-							 auto_dismiss=True)
-        self.dialog.open()
     def _abort_download(self):
         '''Stop the image from downloading'''
         Loader.stop()
+
     def load_next_slide(self):
         carousel = App.get_running_app().root.ids['comic_screen_id'].ids['comic_carousel']
         if carousel.index == len(carousel.slides)-1:
             self.next_comic_pop()
         else:
             carousel.load_next()
+
     def load_prev_slide(self):
         carousel = App.get_running_app().root.ids['comic_screen_id'].ids['comic_carousel']
         print len(carousel.slides)
         if carousel.index == 0:
             self.prev_comic_pop()
         else:
-            carousel.load_next()
+            carousel.load_previous()
+
     def next_comic_pop(self):
         base_url = App.get_running_app().config.get('Server', 'url')
         comic = self.next_comic
         comic_name = '%s #%s'%(str(comic.series),str(comic.issue))
         src_thumb = comic.thumb_url
-        inner_grid = NextComicsInnerGrid(id='inner_grid'+str(comic.id))
-        comic_thumb = NextComicImage(source=src_thumb,id=str(comic.id))
+        inner_grid = NextComicsInnerGrid(id='inner_grid'+str(comic.comic_id_number))
+        comic_thumb = NextComicImage(source=src_thumb,id=str(comic.comic_id_number))
         comic_thumb.comic = self.next_comic
         comic_thumb.comics_collection = self.comics_collection
         inner_grid.add_widget(comic_thumb)
@@ -395,13 +470,14 @@ class ComicScreen(AppScreenTemplate):
 							 height=dp(250),
 							 auto_dismiss=True)
         self.dialog.open()
+
     def prev_comic_pop(self):
         base_url = App.get_running_app().config.get('Server', 'url')
         prev_comic = self.prev_comic
         comic_name = '%s #%s'%(str(prev_comic.series),str(prev_comic.issue))
         src_thumb = prev_comic.thumb_url
-        inner_grid = NextComicsInnerGrid(id='inner_grid'+str(prev_comic.id))
-        comic_thumb = NextComicImage(source=src_thumb,id=str(prev_comic.id))
+        inner_grid = NextComicsInnerGrid(id='inner_grid'+str(prev_comic.comic_id_number))
+        comic_thumb = NextComicImage(source=src_thumb,id=str(prev_comic.comic_id_number))
         comic_thumb.comic = self.prev_comic
         comic_thumb.comics_collection = self.comics_collection
         inner_grid.add_widget(comic_thumb)
@@ -423,9 +499,11 @@ class ComicScreen(AppScreenTemplate):
     def load_next_comic(self):
         self.dialog.dismiss()
         self.load_comic(self.next_comic,self.comics_collection)
+
     def load_prev_comic(self):
         self.dialog.dismiss()
         self.load_comic(self.prev_comic,self.comics_collection)
+
     def get_next_comic(self):
         comics_collection = self.comics_collection
         comic = self.comic
@@ -485,7 +563,7 @@ class NextComicImage(ButtonBehavior,AsyncImage):
         print 'i was clicked'
         app = App.get_running_app()
         comic_screen = app.root.get_screen('comic_screen')
-        print 'comic id = %d'%self.comic.id
+        print 'comic id = %d'%self.comic.comic_id_number
         comic_screen.load_comic(self.comic,self.comics_collection)
 
 #<<<<<<<<<<

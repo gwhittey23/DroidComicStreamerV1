@@ -1,4 +1,4 @@
-__version__ = '1.0000000007'
+__version__ = '1.0000000015'
 DEBUG = True
 import kivy
 kivy.require('1.8.0')
@@ -33,7 +33,7 @@ from kivy.core.window import Window
 from functools import partial
 from kivy.graphics.transformation import Matrix
 from kivy.metrics import dp
-from kivy.properties import ListProperty, ObjectProperty
+from kivy.properties import ListProperty, ObjectProperty,StringProperty
 from gui.theme_engine.toolbar import Toolbar
 #from gui.theme_engine.navigationdrawer import NavigationDrawer
 from gui.theme_engine.button import RaisedButton, FlatButton, FloatingActionButton
@@ -43,7 +43,8 @@ from gui.theme_engine.theme import ThemeBehaviour, ThemeManager
 from gui.theme_engine import images_path
 from gui.theme_engine.list import MaterialList, TextTile
 from gui.theme_engine.selectioncontrols import MaterialCheckBox, MaterialSwitch
-
+from helpers import bind_to_rotation
+from kivy.modules import keybinding
 from kivy.app import App
 
 class AppScreenManager(ScreenManager):
@@ -69,6 +70,8 @@ class AppScreenManager(ScreenManager):
         self.current = self.last_screen.name
 
 class MainApp(App):
+    version = StringProperty()
+    version = __version__
     theme_cls = ThemeManager()
 
     def __init__(self, **kwargs):
@@ -81,18 +84,23 @@ class MainApp(App):
         self.manager.get_screen('home_screen').build_home_screen()
         comic_shelf_screen =self.manager.get_screen('comic_shelf_screen')
         Clock.schedule_once(comic_shelf_screen.build_comic_shelf_screen,.05)
+
+        keybinding.start(Window, App)
         return self.manager
 
 
     def build_config(self, config):
         config.setdefaults('Server', {
             'url': 'http://',
-            'storagedir': self.user_data_dir
+            'storagedir': self.user_data_dir,
+            'max_height': 0
             })
 
         config.setdefaults('Display', {
             'mag_glass_size': 200,
-            'dblpagesplit': self.user_data_dir
+            'right2left':       0,
+            'dblpagesplit': self.user_data_dir,
+
             })
 
 
