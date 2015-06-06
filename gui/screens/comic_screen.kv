@@ -12,17 +12,23 @@
         ComicCarousel:
             id: comic_carousel
         Button:
+            pos_hint: {'x': .3, 'y': .9}
+            text: 'Open Collection Scroll'
+            size_hint: .4, .1
+            opacity: 1
+            on_release: root.comicscreen_open_collection_popup()
+        Button:
             id: tet1
-            pos_hint: {'x': .85, 'y': .95}
-            text: "Back to Library"
+            pos_hint: {'x': .001, 'y': .9}
+            text: "Back to Home"
             size_hint: .2, .1
-            on_release: app.root.current = 'MainScreen'
+            on_release: app.root.current = 'home_screen'
             opacity: 1
         Button:
             pos_hint: {'center_x': .3, 'center_y': .3}
             text: "Open Magnifying glass"
             size_hint: .05, .05
-            on_release: root._carousel_call()
+            on_release: root._open_mag_glass()
         Button:
             pos_hint: {'center_x': .35, 'center_y': .35}
             text: "Call Test"
@@ -34,14 +40,13 @@
             pos_hint: {'x': .01, 'y': .0001}
             text: "Prev"
             size_hint: .2, .1
-            on_release: comic_carousel.load_previous()
-        #            on_release: root._carousel_call()
+            on_release: root.load_prev_slide()
             opacity: 1
         Button:
             pos_hint: {'x': .8, 'y': .0001}
             text: "Next"
             size_hint: .2, .1
-            on_release: comic_carousel.load_next()
+            on_release: root.load_next_slide()
             #on_release: my_carousel.load_next()
             opacity: 1
         Button:
@@ -49,7 +54,9 @@
             text: 'Open Page Scroll'
             size_hint: .4, .1
             opacity: 1
-            on_release: comic_screen_id.comicscreen_open_pagescroll_popup()
+            on_release: root.comicscreen_open_pagescroll_popup()
+            
+            
 <ThumbPopInnerGrid>:
     cols: 1
     rows: 2
@@ -90,17 +97,52 @@
     scale_max: 2
     size_hint: (None,None)
     size: win.size
-#
-#<ComicFloatLayout@FloatLayout>:
-#    pos_hint: {'top':1}
-#    size_hint: 1,1
-#
-#<ComicThumbScroll@Scrollview>:
-#    size_hint: (1,1)
-#    do_scroll_x: True
-#    do_scroll_y: False
-#    id: page_thumb_scroll
 
+<NextComicsScroll>:
+    size_hint: (1,.8)
+    do_scroll_x: True
+    do_scroll_y: False
+
+
+<NextComicsOuterGrid>:
+    rows: 1
+    size_hint: (None,None)
+    spacing: 0
+    padding_horizontal: 0
+
+<NextComicsInnerGrid>:
+    cols: 1
+    rows: 2
+    size_hint: (None,None)
+    size: (130,200)
+    spacing: 5
+<NextComicImage@Image>:
+
+    allow_stretch: True
+    size: (130,200)
+    size_hint: (None, None)
+
+<NextComicsPagebntlbl@Label>:
+    font_style:			'Body1'
+    size_hint:			None, None
+    font_size:          12
+    height:				self.texture_size[1]
+    text_size:			self.width, None
+    halign:				'center'
+
+    text_color: (0,0,0)
+    background_color: (1,1,1,.5)
+
+<ComicFloatLayout@FloatLayout>:
+    pos_hint: {'top':1}
+    size_hint: 1,1
+
+<ComicThumbScroll@Scrollview>:
+    size_hint: (1,1)
+    do_scroll_x: True
+    do_scroll_y: False
+    id: page_thumb_scroll
+#
 #<Widget>:
 #    canvas.after:
 #        Line:

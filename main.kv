@@ -1,39 +1,19 @@
-#:include force gui/screens/library_screen.kv
-#:include force gui/screens/comicscreen_tst.kv
+#:include force gui/screens/comic_shelf_screen.kv
+#:include force gui/screens/comic_screen.kv
+#:include force gui/screens/next_comic_screen.kv
+#:include force gui/screens/home_screen.kv
 #:include force gui/widgets/actionbars.kv
 <AppScreenManager>:
     id: manager
-    Screen:
-        name: 'MainScreen'
-        TopActionBar:
-        BoxLayout:
-            orientation: 'vertical'
-            Label:
-                text: '1st Screen of new layout!'
-                font_size: 30
-            TextInput:
-                id:txt1
-                size_hint: .2,.07
-                text: '1855'
-
-            BoxLayout:
-                Button:
-                    text: 'Back to Comic Book'
-                    font_size: 15
-                    on_release: root.current = 'comic_screen'
-                Button:
-                    text: 'Load Config'
-                    font_size: 15
-                    on_release: root.manager.current = 'libraryScreen'
-                    on_release: app.root.load_lib_screen()
-                Button:
-                    text: 'Comic Screen'
-                    font_size: 15
-                    on_release: root.load_comic_screen()
-                    #on_release: root.load_comic_screen(1855)
-                    on_release: root.pos_hint =  {'top': 1}
+    HomeScreen:
+        id: home_screen_id
+    ComicShelfScreen:
+        id: comic_shelf_screen
     ComicScreen:
         id: comic_screen_id
+    NextComicScreen:
+        id: next_comic_screen_id
+
 
 
 

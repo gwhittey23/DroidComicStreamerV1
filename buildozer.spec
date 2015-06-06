@@ -13,7 +13,7 @@ package.domain = com.andriod.crdroid
 source.dir = .
 
 # (list) Source files to include (let empty to include all the files)
-source.include_exts = py,png,jpg,kv,atlas,json,images
+source.include_exts =
 
 # (list) Source files to exclude (let empty to not exclude anything)
 #source.exclude_exts = spec
@@ -36,7 +36,7 @@ version.filename = %(source.dir)s/main.py
 requirements = kivy,sqlite3,requests,peewee
 
 # (list) Garden requirements
-#garden_requirements =magnet,navigationdrawer
+garden_requirements NavigationDrawer
 
 # (str) Presplash of the application
 #presplash.filename = %(source.dir)s/data/presplash.png

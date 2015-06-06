@@ -1,0 +1,86 @@
+<ComicShelfScreen>:
+    name: 'comic_shelf_screen'
+    toolbar: 		_toolbar
+    nav: 			_nav
+    LibraryScreeNavigationDrawer:
+        id: 				_nav
+        side:				'left'
+        anim_type: 'slide_above_simple'
+        ScrollView:
+            do_scroll_x:	False
+            size_hint_y:	None
+            height:			root.height - _toolbar.height
+
+            MaterialList:
+                tile_rows:					2
+                list_type:					'icon_text'
+                list_data:					root.tile_icon_data
+                allow_empty_selection:		False
+                text_color_selected:		app.theme_cls.primary_dark
+                background_color_selected:	(1, 1, 1, 0)
+                divider_color:				app.theme_cls.divider_color()
+                size_hint:					1, None
+                height:						dp(340)
+        RelativeLayout:
+            orientation:            'vertical'
+            Toolbar:
+                id: _toolbar
+                title:				"D.C.S  Home Screen"
+                title_theme_style:	'Dark'
+                icons_theme_style:	'Dark'
+                elevation:			6
+                pos_hint:			{'x': 0, 'top': 1}
+            RaisedButton:
+                size_hint:			None, None
+                size:				dp(130), dp(36)
+                pos_hint:			{'center_x': 0.3, 'center_y': 0.8}
+                elevation_normal:	2
+                theme_style:		'Dark'
+                disabled:			False
+                text:               "Series List"
+                on_release:         app.root.load_comic_shelf_screen('Series')
+
+
+            TextInput:
+                id:txt1
+                size_hint: .2,.07
+                text: '1855'
+            MaterialList:
+                title:						"A avatar+text tile list"
+                tile_rows:					2
+                list_type:					'icon_text'
+                list_data:					root.test_icon_data
+                allow_empty_selection:		False
+                text_color_selected:		app.theme_cls.primary_dark
+                background_color_selected:	(1, 1, 1, 0)
+                size_hint:					0.8, None
+                height:						dp(300)
+                pos_hint:					{'center_x': 0.5, 'center_y': 0.45}
+
+
+
+
+
+
+
+
+#    NavigationDrawer:
+#        id: side_panel
+#        BoxLayout: # side panel widgets
+#            orientation: 'vertical'
+#            Button:
+#                text:'Sort by'
+#
+#    TopActionBar:
+#
+#
+#
+#
+#    FloatLayout:
+#        id:fl1
+#        Label:
+#            text:''
+#            color: (255,0,255,1)
+#
+#
+#
