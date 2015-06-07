@@ -21,8 +21,9 @@ class AppNavDrawer(ThemeBehaviour,NavigationDrawer):
 class AppScreenTemplate(Screen):
     tile_icon_data = ListProperty()
     test_icon_data = ListProperty()
+    tile_link_data = ListProperty()
     def toggle_nav(self):
-        print self.nav.state
+
         if self.nav.state != "open":
             return
         self.nav.toggle_state()

@@ -1,19 +1,17 @@
 from kivy.app import App
 from kivy.uix.image import AsyncImage
-from kivy.uix.button import Button
 from kivy.uix.button import ButtonBehavior
 from kivy.uix.gridlayout import GridLayout
-from comicstream.comicstreamerconn import ComicStreamerConnect
-from comicstream.comic_data import ComicCollection, ComicBook
-from gui.screens.custom_widgets import AppScreenTemplate, AppNavDrawer
-from comicstream.url_get import CustomUrlRequest
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.label import Label
 from kivy.properties import ObjectProperty
-
-from gui.theme_engine.label import MaterialLabel
-
-
+from kivy.clock import Clock
+from comicstream.comic_data import ComicCollection, ComicBook
+from gui.widgets.custom_widgets import AppScreenTemplate, AppNavDrawer
+from comicstream.url_get import CustomUrlRequest
+from gui.widgets.custom_effects import RectangularRippleBehavior,CircularRippleBehavior
+from kivy.logger import Logger
+import inspect
 class HomeScreeNavigationDrawer(AppNavDrawer):
     pass
 
@@ -54,7 +52,28 @@ class HomeScreen(AppScreenTemplate):
                                 {'icon': 'md-thumb-up', 'text': 'Like',
                                 'secondary_text': "A like button",
                                 'callback': self.toggle_nav}
+
                                ]
+
+        self.tile_link_data = [
+                                {'icon': 'md-list', 'text': 'Series',
+                                'secondary_text': "A list of Series",
+                                'callback':app.manager.load_comic_shelf_screen},
+                                {'icon': 'md-event', 'text': 'Event',
+                                'secondary_text': "An event button",
+                                'callback':''},
+                                {'icon':  'md-search', 'text': 'Search',
+                                'secondary_text': "A search button",
+                                'callback': self.toggle_nav},
+                                {'icon': 'md-thumb-up', 'text': 'Like',
+                                'secondary_text': "A like button",
+                                'callback': self.toggle_nav}
+
+                               ]
+
+
+
+
         self.build_recent_comics()
     def build_collection(self,req, results):
         print self.ids
@@ -76,22 +95,34 @@ class HomeScreen(AppScreenTemplate):
             comic_thumb.comic = comic
             comic_thumb.comics_collection = self.collection
             inner_grid.add_widget(comic_thumb)
-            comic_thumb.bind(on_press=comic_thumb.click)
+            comic_thumb.bind(on_release=comic_thumb.click)
             smbutton = RecentComicsPagebntlbl(text=comic_name)
             inner_grid.add_widget(smbutton)
             grid.add_widget(inner_grid)
         scroll.add_widget(grid)
-
+    def got_error(self,req, results):
+        print 'got_error'
+        Logger.critical('ERROR in %s %s'%(inspect.stack()[0][3],results))
+    def got_time_out(self,req, results):
+        Logger.critical('ERROR in %s %s'%(inspect.stack()[0][3],results))
+    def got_failure(self,req, results):
+        Logger.critical('ERROR in %s %s'%(inspect.stack()[0][3],results))
+    def got_redirect(self,req, results):
+        Logger.critical('ERROR in %s %s > %s'%(inspect.stack()[0][3],req,results))
     def build_recent_comics(self):
 
         self.base_url = App.get_running_app().config.get('Server', 'url')
         recent_list  = "%s/comiclist?order=-added&per_page=10" % (self.base_url)
-        req = CustomUrlRequest(recent_list,self.build_collection)
+        req = CustomUrlRequest(recent_list,
+                               self.build_collection,
+                               on_error=self.got_error,
+                               on_failure=self.got_failure,
+                               on_redirect=self.got_redirect,
+                               timeout = 15,
+                               )
 
     def call_test(self):
         print self.collection
-
-
 
 #<<<<Following are class for recent list>>>>>>>>>
 class RecentComicsScroll(ScrollView):
@@ -106,12 +137,33 @@ class RecentComicsPagebntlbl(Label):
 class RecentComicsInnerGrid(GridLayout):
     pass
 
-class RecentComicsPageImage(ButtonBehavior,AsyncImage):
+class RecentComicsPageImage(RectangularRippleBehavior,ButtonBehavior,AsyncImage):
     comic = ObjectProperty()
     comics_collection = ObjectProperty()
+    def enable_me(self):
+        self.disabled = False
+    # def on_press(self):
+    #     self.disabled = True
+    #     app = App.get_running_app()
+    #     app.root.current = 'comic_screen'
+    #     comic_screen = app.root.get_screen('comic_screen')
+    #     comic_screen.load_comic(self.comic,self.comics_collection)
+    #     Clock.schedule_once(lambda x:self.enable_me, .05)
+    #
+    # def on_release(self,instance):
+    #     self.disabled = True
+    #     app = App.get_running_app()
+    #     app.root.current = 'comic_screen'
+    #     comic_screen = app.root.get_screen('comic_screen')
+    #     comic_screen.load_comic(self.comic,self.comics_collection)
+    #     Clock.schedule_once(lambda x:self.enable_me, .05)
+    #     return super(RecentComicsPageImage, self).on_release(instance)
     def click(self,instance):
+        self.disabled = True
         app = App.get_running_app()
         app.root.current = 'comic_screen'
         comic_screen = app.root.get_screen('comic_screen')
         comic_screen.load_comic(self.comic,self.comics_collection)
+        Clock.schedule_once(lambda x:self.enable_me, .05)
+
 #<<<<<<<<<<

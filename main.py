@@ -1,7 +1,7 @@
-__version__ = '1.0000000015'
+__version__ = '1.0000000018'
 DEBUG = True
 import kivy
-kivy.require('1.8.0')
+kivy.require('1.9.1')
 if DEBUG:
     from kivy.config import Config
     print 'setting windows size'
@@ -58,10 +58,9 @@ class AppScreenManager(ScreenManager):
         self.get_screen('comic_screen').load_comic(comic_number)
         self.current = 'comic_screen'
 
-    def load_comic_shelf_screen(self,display_mode):
-        print 'wjooas'
+    def load_comic_shelf_screen(self):
         comic_self_screen = self.get_screen('comic_shelf_screen')
-        comic_self_screen.load_mode(display_mode)
+        comic_self_screen.load_series()
         self.current = 'comic_shelf_screen'
 
     def _go_home_screen(self,instance):

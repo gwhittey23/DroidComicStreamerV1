@@ -4,7 +4,7 @@ from kivy.properties import ListProperty, ObjectProperty
 #from theme_engine.navigationdrawer import NavigationDrawer
 from gui.theme_engine.theme import ThemeManager
 from kivy.app import App
-from gui.screens.custom_widgets import AppScreenTemplate,AppNavDrawer
+from gui.widgets.custom_widgets import AppScreenTemplate,AppNavDrawer
 
 
 class ComicShelfCarousel(Carousel):
