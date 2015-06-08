@@ -2,14 +2,7 @@ from kivy.uix.screenmanager import Screen
 from kivy.app import App
 from gui.theme_engine.theme import ThemeBehaviour
 from gui.navigationdrawer import NavigationDrawer
-from kivy.base import EventLoop
-from kivy.metrics import dp
 from kivy.properties import *
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.button import ButtonBehavior
-from kivy.uix.label import Label
-from kivy.uix.modalview import ModalView
-from kivy.uix.popup import PopupException
 
 
 class AppNavDrawer(ThemeBehaviour,NavigationDrawer):
@@ -31,4 +24,5 @@ class AppScreenTemplate(Screen):
     def on_leave(self):
         app = App.get_running_app()
         app.manager.last_screen = self
+
 

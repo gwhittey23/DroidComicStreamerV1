@@ -19,7 +19,9 @@ class HomeScreeNavigationDrawer(AppNavDrawer):
 class HomeScreen(AppScreenTemplate):
     def __init__(self,**kwargs):
         super(HomeScreen, self).__init__(**kwargs)
-        self.collection = None
+
+    def test_me(self):
+        print self.collection.size
     def build_home_screen(self):
         root = self
         app = App.get_running_app()
@@ -82,12 +84,13 @@ class HomeScreen(AppScreenTemplate):
         for item in data['comics']:
             new_comic = ComicBook(item)
             new_collection.add_comic(new_comic)
-        self.collection = new_collection.comics
+        print new_collection.size
+        self.collection = new_collection
         scroll = self.ids.recent_comics_scroll
         grid = RecentComicsOuterGrid(id='outtergrd')
         grid.bind(minimum_width=grid.setter('width'), )
         base_url = App.get_running_app().config.get('Server', 'url')
-        for comic in self.collection:
+        for comic in self.collection.comics:
             comic_name = '%s #%s'%(str(comic.series),str(comic.issue))
             src_thumb = comic.thumb_url
             inner_grid = RecentComicsInnerGrid(id='inner_grid'+str(comic.comic_id_number))
@@ -140,7 +143,8 @@ class RecentComicsInnerGrid(GridLayout):
 class RecentComicsPageImage(RectangularRippleBehavior,ButtonBehavior,AsyncImage):
     comic = ObjectProperty()
     comics_collection = ObjectProperty()
-    def enable_me(self):
+    def enable_me(self,instance):
+        Logger.debug('enabling %s'%self.id)
         self.disabled = False
     # def on_press(self):
     #     self.disabled = True
@@ -164,6 +168,6 @@ class RecentComicsPageImage(RectangularRippleBehavior,ButtonBehavior,AsyncImage)
         app.root.current = 'comic_screen'
         comic_screen = app.root.get_screen('comic_screen')
         comic_screen.load_comic(self.comic,self.comics_collection)
-        Clock.schedule_once(lambda x:self.enable_me, .05)
+        Clock.schedule_once(self.enable_me, .05)
 
 #<<<<<<<<<<

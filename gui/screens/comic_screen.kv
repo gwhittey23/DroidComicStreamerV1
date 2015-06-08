@@ -11,56 +11,63 @@
         id: comic_screen_float
         ComicCarousel:
             id: comic_carousel
-        RippleButton:
+        ControlButton:
             id: tet1
             pos_hint: {'x': .0000000001, 'y': .85}
             text: "Back to Home"
             size_hint: .2, .20
             on_release: app.root.current = 'home_screen'
             opacity: 0
-        RippleButton:
+        ControlButton:
+            id: btn_collection
             pos_hint: {'x': .3, 'y': .85}
             text: 'Open Collection Scroll'
             size_hint: .4, .20
-            opacity: 0
+            opacity: 1
             on_release: root.comicscreen_open_collection_popup()
 
-        RippleButton:
+        ControlButton:
             pos_hint: {'x': .8, 'y': .85}
             text: "Open Magnifying glass"
             size_hint: .2, .20
             opacity: 0
             on_release: root._open_mag_glass()
 
-#        RippleButton:
-#            pos_hint: {'center_x': .35, 'center_y': .35}
-#            text: "Call Test"
-#            size_hint: .05, .05
-#            on_release: root._cal_id()
-#            opacity: 0
+        ControlButton:
+            pos_hint: {'center_x': .35, 'center_y': .35}
+            text: "Call Test"
+            size_hint: .05, .05
+            on_release: root._cal_id()
+            opacity: 1
 
-        RippleButton:
+        ControlButton:
             pos_hint: {'x': .0000000001, 'y': .0001}
             text: "Prev"
             size_hint: .2, .6
-            on_release: root.load_prev_slide()
+            on_release: root.load_prev_slide(self)
             opacity: 0
-        RippleButton:
+        ControlButton:
             pos_hint: {'x': .8, 'y': .0001}
             text: "Next"
             size_hint: .2, .6
-            on_release: root.load_next_slide()
+            on_release: root.load_next_slide(self)
             #on_release: my_carousel.load_next()
             opacity: 0
 
-        RippleButton:
+        ControlButton:
             pos_hint: {'x': .3, 'y': .0001}
             text: 'Open Page Scroll'
             size_hint: .4, .2
             opacity: 0
             on_release: root.comicscreen_open_pagescroll_popup()
-            
-            
+        ControlButton:
+            pos_hint: {'x': .3, 'y': .4}
+            text: 'Open Random'
+            size_hint: .2, .2
+            opacity: 1
+            on_release: root.load_random_comic()
+
+
 <ThumbPopPageInnerGrid>:
     cols: 1
     rows: 2

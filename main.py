@@ -1,4 +1,4 @@
-__version__ = '1.0000000018'
+__version__ = '1.0000000028'
 DEBUG = True
 import kivy
 kivy.require('1.9.1')
@@ -46,7 +46,8 @@ from gui.theme_engine.selectioncontrols import MaterialCheckBox, MaterialSwitch
 from helpers import bind_to_rotation
 from kivy.modules import keybinding
 from kivy.app import App
-
+# from memory_profiler import profile
+import gc
 class AppScreenManager(ScreenManager):
     last_screen = ObjectProperty()
     def __init__(self,**kwargs):
@@ -69,6 +70,9 @@ class AppScreenManager(ScreenManager):
         self.current = self.last_screen.name
 
 class MainApp(App):
+    gc.DEBUG_LEAK = True
+    gc.DEBUG_STATS = True
+    gc.DEBUG_OBJECTS = True
     version = StringProperty()
     version = __version__
     theme_cls = ThemeManager()
@@ -87,7 +91,7 @@ class MainApp(App):
         keybinding.start(Window, App)
         return self.manager
 
-
+    # @profile()
     def build_config(self, config):
         config.setdefaults('Server', {
             'url': 'http://',

@@ -6,13 +6,14 @@ from kivy.uix.image import AsyncImage
 
 
 
-class ComicCollection(Widget):
-    comics = ListProperty([])
-    ids = DictProperty({})
-    name = StringProperty()
-    def __init__(self,**kwargs):
-        super(ComicCollection, self).__init__(**kwargs)
+class ComicCollection(object):
 
+    # ids = DictProperty({})
+    # name = StringProperty()
+    def __init__(self):
+        self.size = 65
+        self.comics = []
+        self.mynumber = 32
     '''Group of Comics in bundlded together'''
     def add_comic(self, comic, index=0):
 
@@ -64,7 +65,7 @@ class ComicsCoverImage(ButtonBehavior,AsyncImage):
         comic_screen = app.root.get_screen('comic_screen')
         comic_screen.load_comic(self.comic,self.comics_collection)
 
-class ComicBook(Widget):
+class ComicBook(object):
     cover = ObjectProperty()
     '''
     class representing a single comic
@@ -100,11 +101,6 @@ class ComicBook(Widget):
         base_url = App.get_running_app().config.get('Server', 'url')
         src_thumb = "%s/comic/%s/thumbnail#.jpg" % (base_url, self.comic_id_number)
         self.thumb_url  = src_thumb
-        self.cover_image = ComicsCoverImage(source=src_thumb,id=str(self.id),
-                                            allow_stretch= True,
-                                            size= (130,200),
-                                            size_hint= (None, None)
-                                            )
 
     def json_data(self):
         pass

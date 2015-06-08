@@ -41,6 +41,17 @@
 #                size_hint:					0.8, None
 #                height:						dp(300)
 #                pos_hint:					{'x': 0.001, 'top': .9}
+            RaisedButton:
+                size_hint:			None, None
+                size:				dp(130), dp(36)
+                pos_hint:			{'x': 0.001, 'top': .94}
+                elevation_normal:	2
+                theme_style:		'Dark'
+                disabled:			False
+                text:               "Series List"
+                on_release:         root.test_me()
+
+
 ##
 #            RaisedButton:
 #                size_hint:			None, None
